@@ -1,0 +1,9 @@
+python-dotenv
+streamlit
+mysql-connector-python
+selenium
+pymysql
+numpy
+pandas
+matplotlib
+scikit-learn

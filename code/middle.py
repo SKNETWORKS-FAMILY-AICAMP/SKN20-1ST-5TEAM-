@@ -53,57 +53,74 @@ def start_dynamic_option_setting():
     driver.switch_to.default_content()
     time.sleep(3)
 
-def insert_dim_month(cur, int_date, year, month):
-    # sql = "INSERT INTO dim_month VALUES (%s, %s, %s)"
-    sql = """
-        INSERT INTO dim_month (date_key, year, month)
-        VALUES (%s, %s, %s)
-        ON DUPLICATE KEY UPDATE
-            year = VALUES(year),
-            month = VALUES(month)
-    """
-    cur.execute(sql, (int_date, year, month))
-
-def insert_eco_monthly(cur, int_date, electric, hybrid, hydrogen, etc, cng):
-    sql = "INSERT INTO eco_monthly (date_key, ev, hev, fcev, etc, cng) VALUES (%s, %s, %s, %s, %s, %s)"
-    cur.execute(sql, (int_date, electric, hybrid, hydrogen, etc, cng))
-
-def insert_ice_monthly(cur, int_date, gasoline, diesel, lpg):
-    sql = "INSERT INTO ice_monthly (date_key, gasoline, diesel, lpg) VALUES (%s, %s, %s, %s)"
-    cur.execute(sql, (int_date, gasoline, diesel, lpg))
-
-
 def crawl_data():
     soup = BeautifulSoup(driver.page_source, 'html.parser')
-    selected_tr = soup.select('#mainTable > tbody > tr')
-    # td_span = soup.select('#mainTable > tbody > tr > td > span.val')
-    # len_selected_tr = len(selected_tr)
+    
+    all_data = []
+    for tr in soup.select('#mainTable > tbody > tr'):
+        row_data = [td.text.strip() for td in tr.select('td')]
+        if row_data:
+            all_data.append(row_data)
 
-    for tr in selected_tr:
-        tds = tr.select('td')
-        date = tds[0].get('title').strip()
-        year, month = [x.strip() for x in date.split('.')]
-        int_date = int(year) * 100 + int(month)
+    dim_data = []
+    for i, row in enumerate(all_data):
+        if len(row) > 0:
+            date_str = row[0]
+        
+        if '.' in date_str:
+            # "2019.01" -> ["2019", "01"]
+            year_str, month_str = date_str.split('.')
+            year = int(year_str)  # 2019
+            month = int(month_str)
+            date_int = year*100 + month  # 201901
+              # 1 (01 -> 1로 자동 변환)
 
-        gasoline = int(tds[3].get('title').replace(",", ""))
-        diesel = int(tds[4].get('title').replace(",", ""))
-        lpg = int(tds[5].get('title').replace(",", ""))
-        electric = int(tds[6].get('title').replace(",", ""))
-        cng = int(tds[7].get('title').replace(",", ""))
-        hybrid = int(tds[8].get('title').replace(",", ""))
-        hydrogen = 0 if tds[9].get('title') == "-" else int(tds[9].get('title').replace(",", ""))
-        etc = int(tds[10].get('title').replace(",", ""))
+        dim_data.append([date_int, year, month])
+        # print(f"{date_int}, {year}, {month}")
 
-        with get_connection() as conn:
-            with conn.cursor() as cur:
-                try:
-                    insert_dim_month(cur, int_date, year, month)
-                    insert_eco_monthly(cur, int_date, electric, hybrid, hydrogen, etc, cng)
-                    insert_ice_monthly(cur,int_date, gasoline, diesel, lpg)
-                except Exception as e:
-                    print(f'e: {e}')
-                conn.commit()
+    eco_data = []
+    for i, row in enumerate(all_data):
+        if len(row) > 10:  # 인덱스 10까지 존재하는지 확인
+            # null, 빈 문자열, '-' 등을 0으로 처리
+            ev = row[6] if row[6] and row[6].strip() not in ['', '-', 'null', 'NULL', 'None'] else '0'
+            cng = row[7] if row[7] and row[7].strip() not in ['', '-', 'null', 'NULL', 'None'] else '0'
+            hev = row[8] if row[8] and row[8].strip() not in ['', '-', 'null', 'NULL', 'None'] else '0'
+            fcev = row[9] if row[9] and row[9].strip() not in ['', '-', 'null', 'NULL', 'None'] else '0'
+            etc = row[10] if row[10] and row[10].strip() not in ['', '-', 'null', 'NULL', 'None'] else '0'
 
+        eco_data.append([ev, cng, hev, fcev, etc])
+        print(f"{ev}, {cng}, {hev}, {fcev}, {etc}")
+
+    ice_data = []
+    for i, row in enumerate(all_data):
+        if len(row) > 5:
+            gasoline = row[3] if row[3] and row[3].strip() not in ['', '-', 'null', 'NULL', 'None'] else '0'
+            desel = row[4] if row[4] and row[4].strip() not in ['', '-', 'null', 'NULL', 'None'] else '0'
+            lpg = row[5] if row[5] and row[5].strip() not in ['', '-', 'null', 'NULL', 'None'] else '0'
+
+        ice_data.append([gasoline, desel, lpg])
+        print(f"{gasoline}, {desel}, {lpg}")
+
+
+    
+    
+
+    # td_span = soup.select('#mainTable > tbody > tr')
+    # test = td_span[0].text.strip()
+    # print(len(td_span))
+
+    # with get_connection() as conn:
+    #     with conn.cursor() as cur:
+    #         try:
+    #             sql = 'insert into shop_base2_tbl values(%s, %s, %s, %s, %s)'
+    #             cur.execute(sql, (data[0], data[1], data[2], data[3], data[4]))
+    #         except pymysql.err.IntegrityError:
+    #             sql = '''update shop_base2_tbl
+    #                         set shop_state=%s, shop_addr=%s, shop_phone_number=%s
+    #                     where area=%s and shop_name=%s
+    #             '''
+    #             cur.execute(sql, (data[2], data[3], data[4], data[0], data[1]))
+    #         conn.commit()
 
 start_dynamic_option_setting()
 # 행렬전환 클릭 함수
@@ -124,7 +141,10 @@ matrix_steps = [
 # 행렬전환 작업 실행
 for xpath, wait_time in matrix_steps:
     click_matrix_element(driver, xpath, wait_time)
-time.sleep(3)
+
+
+time.sleep(30)
+
 crawl_data()
 time.sleep(10)
 driver.quit()
