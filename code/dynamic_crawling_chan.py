@@ -53,24 +53,57 @@ def start_dynamic_option_setting():
     driver.switch_to.default_content()
     time.sleep(3)
 
+def insert_dim_month(cur, int_date, year, month):
+    # sql = "INSERT INTO dim_month VALUES (%s, %s, %s)"
+    sql = """
+        INSERT INTO dim_month (date_key, year, month)
+        VALUES (%s, %s, %s)
+        ON DUPLICATE KEY UPDATE
+            year = VALUES(year),
+            month = VALUES(month)
+    """
+    cur.execute(sql, (int_date, year, month))
+
+def insert_eco_monthly(cur, int_date, electric, hybrid, hydrogen, etc):
+    sql = "INSERT INTO eco_monthly VALUES (%s, %s, %s, %s, %s)"
+    cur.execute(sql, (int_date, electric, hybrid, hydrogen, etc))
+
+def insert_ice_monthly(cur, int_date, gasoline, diesel, lpg, cng):
+    sql = "INSERT INTO ice_monthly VALUES (%s, %s, %s, %s, %s)"
+    cur.execute(sql, (int_date, gasoline, diesel, lpg, cng))
+
+
 def crawl_data():
     soup = BeautifulSoup(driver.page_source, 'html.parser')
-    td_span = soup.select('#mainTable > tbody > tr > td > span.val')
-    test = td_span[0].text.strip()
-    print(len(td_span))
+    selected_tr = soup.select('#mainTable > tbody > tr')
+    # td_span = soup.select('#mainTable > tbody > tr > td > span.val')
+    # len_selected_tr = len(selected_tr)
 
-    # with get_connection() as conn:
-    #     with conn.cursor() as cur:
-    #         try:
-    #             sql = 'insert into shop_base2_tbl values(%s, %s, %s, %s, %s)'
-    #             cur.execute(sql, (data[0], data[1], data[2], data[3], data[4]))
-    #         except pymysql.err.IntegrityError:
-    #             sql = '''update shop_base2_tbl
-    #                         set shop_state=%s, shop_addr=%s, shop_phone_number=%s
-    #                     where area=%s and shop_name=%s
-    #             '''
-    #             cur.execute(sql, (data[2], data[3], data[4], data[0], data[1]))
-    #         conn.commit()
+    for tr in selected_tr:
+        tds = tr.select('td')
+        date = tds[0].get('title').strip()
+        year, month = [x.strip() for x in date.split('.')]
+        int_date = int(year) * 100 + int(month)
+
+        gasoline = int(tds[3].get('title').replace(",", ""))
+        diesel = int(tds[4].get('title').replace(",", ""))
+        lpg = int(tds[5].get('title').replace(",", ""))
+        eletric = int(tds[6].get('title').replace(",", ""))
+        cng = int(tds[7].get('title').replace(",", ""))
+        hybrid = int(tds[8].get('title').replace(",", ""))
+        hydrogen = 0 if tds[9].get('title') == "-" else int(tds[9].get('title').replace(",", ""))
+        etc = int(tds[10].get('title').replace(",", ""))
+
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    insert_dim_month(cur, int_date, year, month)
+                    insert_eco_monthly(cur,int_date, eletric, hybrid, hydrogen, etc)
+                    insert_ice_monthly(cur,int_date, gasoline, diesel, lpg, cng)
+                except Exception as e:
+                    print(f'e: {e}')
+                conn.commit()
+
 
 start_dynamic_option_setting()
 # 행렬전환 클릭 함수
@@ -91,10 +124,7 @@ matrix_steps = [
 # 행렬전환 작업 실행
 for xpath, wait_time in matrix_steps:
     click_matrix_element(driver, xpath, wait_time)
-
-
-time.sleep(30)
-
+time.sleep(3)
 crawl_data()
 time.sleep(10)
 driver.quit()
