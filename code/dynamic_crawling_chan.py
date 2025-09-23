@@ -73,6 +73,28 @@ def crawl_data():
     #         conn.commit()
 
 start_dynamic_option_setting()
+# 행렬전환 클릭 함수
+def click_matrix_element(driver, xpath, wait_time=1):
+    element = driver.find_element(By.XPATH, xpath)
+    element.click()
+    time.sleep(wait_time)
+
+# 행렬전환 순서
+matrix_steps = [
+    ('//*[@id="ico_swap"]/a', 5),  # 매트릭스 버튼 (5초 대기)
+    ('//*[@id="Ri0"]', 1),  # 시점 선택
+    ('//*[@id="pop_pivotfunc2"]/div[2]/div[1]/div[2]/p/a[2]/img', 1),  # 시점 추가
+    ('//*[@id="Le0"]', 1),  # 차종 선택  
+    ('//*[@id="pop_pivotfunc2"]/div[2]/div[1]/div[1]/div/span/a[2]/img', 1),  # 차종 이동
+    ('//*[@id="pop_pivotfunc2"]/div[2]/div[2]/span/a', 1)  # 적용 버튼
+]
+# 행렬전환 작업 실행
+for xpath, wait_time in matrix_steps:
+    click_matrix_element(driver, xpath, wait_time)
+
+
+time.sleep(30)
+
 crawl_data()
 time.sleep(10)
 driver.quit()
