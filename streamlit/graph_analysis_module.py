@@ -43,7 +43,7 @@ def get_advanced_yearly_data():
             SUM(e.cng) as cng,
             SUM(e.etc) as etc,
             SUM(e.ev + e.hev + e.fcev + e.cng + e.etc) as total_eco
-        FROM dim_month d
+        FROM dim_monthly d
         JOIN eco_monthly e ON d.date_key = e.date_key
         WHERE d.year BETWEEN 2015 AND 2024
         GROUP BY d.year
@@ -60,7 +60,7 @@ def get_advanced_yearly_data():
             SUM(i.diesel) as diesel,
             SUM(i.lpg) as lpg,
             SUM(i.gasoline + i.diesel + i.lpg) as total_ice
-        FROM dim_month d
+        FROM dim_monthly d
         JOIN ice_monthly i ON d.date_key = i.date_key
         WHERE d.year BETWEEN 2015 AND 2024
         GROUP BY d.year
