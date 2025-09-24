@@ -23,19 +23,12 @@ MySQL DB 설계 및 데이터 저장
 파이썬과 MySQL 연동 해서 Streamlit을 통한 시각화
 
 ## 🛠️ 기술 스택
+<img width="98" height="28" alt="image" src="https://github.com/user-attachments/assets/d7511b4b-a1ef-4da8-aca9-92f5c0d64fa3" /> <img width="98" height="28" alt="image" src="https://github.com/user-attachments/assets/028e423d-f2e5-421b-839d-df554ca2d9fe" /><img width="96" height="28" alt="image" src="https://github.com/user-attachments/assets/e4436748-353d-4ae6-8ac7-9ae64631f12f" /><img width="171" height="28" alt="image" src="https://github.com/user-attachments/assets/80baf2c1-620c-4bd5-a4cd-47b0b234f388" /><img width="119" height="28" alt="image" src="https://github.com/user-attachments/assets/c53bd1a4-dc6c-4f41-8032-ec7d9998458a" /><img width="88" height="28" alt="image" src="https://github.com/user-attachments/assets/19972ca0-cd7b-4945-a2cf-a71887c9640d" />
 
 
-### 🎨 Frontend
-- **Streamlit**: 웹 대시보드 및 데이터 시각화
 
-### ⚙️ Backend  
-- **Python**: 데이터 처리 및 비즈니스 로직
-- **MySQL**: 데이터베이스 관리
-- **Pandas**: 데이터 분석 및 처리
 
-### 📊 데이터 처리
-- **Beautiful Soup / Selenium**: 웹 크롤링
-- **Plotly / Matplotlib**: 데이터 시각화
+
 
 ## 📋 프로젝트 구조
 ### 📈 WBS (Work Breakdown Structure)
