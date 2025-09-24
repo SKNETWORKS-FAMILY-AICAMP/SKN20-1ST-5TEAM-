@@ -1,0 +1,119 @@
+# SKN20-1ST-5TEAM-
+
+## 👥 팀 소개
+**팀명**
+
+- 팀명
+
+**팀원 소개**
+
+| 박찬 | 정래원 | 조준상 | 문창교 | 이경현 |
+|--------|--------|--------|--------|--------|
+
+## 🖥️ 프로젝트
+### 📅 개발 기간
+- **2025.09.24 ~ 2025.09.26 (총 3일)**
+
+### 🚗 프로젝트 주제
+- 서울시 친환경 자동차 년도별 추이 분석 
+
+## 📌 프로젝트 개요
+### 📝 프로젝트 소개
+- 프로젝트 상세 설명
+- 2020년 기점으로 친환경 자동차의 수요 증대 -> 데이터 확인
+
+### 🔍 프로젝트 필요성
+- 배경 및 문제점 정의
+- 비친환경 자동차의 문제점 제기 및 친환경 자동차 장점
+
+### 🎯 프로젝트 목표
+- 달성하고자 하는 목표
+- 그래프 잘 뽑아내기, 
+
+## 🛠️ 기술 스택
+###
+<p>
+  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=Python&logoColor=white">
+  <img src="https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white">
+  <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white">
+  <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+  <img src="https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=vscode&logoColor=white">
+  <img src="https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white">
+    <img src="https://img.shields.io/badge/Streamlit-%23FE4B4B.svg?style=for-the-badge&logo=streamlit&logoColor=white">
+  <img src="https://img.shields.io/badge/Selenium-43B02A?style=for-the-badge&logo=Selenium&logoColor=white">
+    <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white">
+</p>
+
+
+### 🎨 Frontend
+- **Streamlit**: 웹 대시보드 및 데이터 시각화
+
+### ⚙️ Backend  
+- **Python**: 데이터 처리 및 비즈니스 로직
+- **MySQL**: 데이터베이스 관리
+
+### 📊 데이터 처리
+- **Beautiful Soup / Selenium**: 웹 크롤링
+- **Python / MySQL**: 데이터 시각화
+
+## 📋 프로젝트 구조
+### 📈 WBS (Work Breakdown Structure)
+- 프로젝트 기획
+- 데이터베이스 설계 및 구축
+- 데이터 수집 (크롤링)
+- UI/UX 구현
+- 문서화 및 발표 준비
+
+### 📄 요구사항 명세서
+### 🌀 사용자 요구사항
+- 기능적 요구사항
+
+### 🖥 시스템 요구사항  
+- 비기능적 요구사항
+
+## 📊 ERD 구조
+- 데이터베이스 구조도
+- 테이블 간 관계 정의
+
+## 📋 테이블 명세서
+- 각 테이블별 컬럼 정의
+- 데이터 타입 및 제약조건
+- 기본키/외래키 관계
+
+## 📚 데이터 소개
+### 🚗 수집 데이터 출처
+- **국토교통통계누리**: 전국 자동차 등록 현황
+- **esoul**: 서울시 자동차관련 등록 현황  
+- **자동차 제조사 사이트**: FAQ 데이터
+
+### 🔧 데이터 수집 방법
+- 웹 크롤링 기법 적용
+- CSV 파일 파싱
+
+## 🗃️ 주요 기능
+### 🔹 데이터 조회 기능
+- 전국 자동차 등록 현황 조회
+- 지역별/차종별/연도별 필터링
+- 브랜드별 판매량 분석
+
+### 🔹 데이터 시각화
+- 차트 및 그래프 제공  
+- 지도 시각화 (지역별 현황)
+- 대시보드 형태의 종합 정보
+
+### 🔹 FAQ 시스템
+- 브랜드별 FAQ 조회
+- 키워드 검색 기능
+- 질문/답변 데이터 제공
+
+## 🎬 프로젝트 결과 (Streamlit UI)
+- 메인 화면 스크린샷
+- 각 기능별 화면 시연
+- 사용자 인터페이스 소개
+
+## 💭 한줄 회고
+- 박찬:
+- 정래원:
+- 조준상:
+- 문창교:
+- 이경현:
