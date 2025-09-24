@@ -59,7 +59,7 @@ def extract_values(path: str):
     seoul_idx = int(hdr.str.contains("서울").idxmax())
 
     # 연료열(내용 기반)
-    fuel_candidates = ["휘발유","경유","LPG","CNG"]
+    fuel_candidates = ["휘발유","경유","LPG"]
     def hit(c):
         s = data[c].astype(str)
         return sum(s.str.contains(k, na=False).sum() for k in fuel_candidates)
@@ -83,34 +83,47 @@ def extract_values(path: str):
         "gasoline": pick(r"휘발유"),
         "diesel"  : pick(r"경유"),
         "lpg"     : pick(r"LPG|엘피지|액화석유"),
-        "cng"     : pick(r"CNG"),
+        
     }
-
 def upsert(date_key: int, v: dict):
-    conn = pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASS,
-                           database=DB_NAME, charset="utf8mb4", autocommit=False)
+    conn = pymysql.connect(
+        host=DB_HOST, user=DB_USER, password=DB_PASS,
+        database=DB_NAME, charset="utf8mb4", autocommit=False
+    )
     try:
         with conn.cursor() as cur:
-            # dim_month FK 대비 (없으면 무시)
+            # FK 대비(없으면 무시)
             try:
-                cur.execute("INSERT IGNORE INTO `1st_project`.`dim_month` (date_key) VALUES (%s)", (date_key,))
+                cur.execute(
+                    "INSERT IGNORE INTO `1st_project`.`dim_month` (date_key) VALUES (%s)",
+                    (date_key,)
+                )
             except Exception:
                 pass
 
             sql = f"""
-            INSERT INTO `1st_project`.`{TABLE}` (date_key, gasoline, diesel, lpg, cng)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO `1st_project`.`{TABLE}` (date_key, gasoline, diesel, lpg)
+            VALUES (%s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE
               gasoline=VALUES(gasoline),
               diesel  =VALUES(diesel),
-              lpg     =VALUES(lpg),
-              cng     =VALUES(cng)
+              lpg     =VALUES(lpg)
             """
-            cur.execute(sql, (date_key, v["gasoline"], v["diesel"], v["lpg"], v["cng"]))
+            cur.execute(sql, (
+                int(date_key),
+                int(v.get("gasoline", 0) or 0),
+                int(v.get("diesel", 0)   or 0),
+                int(v.get("lpg", 0)      or 0),
+            ))
         conn.commit()
         print(f"[OK] {DB_NAME}.{TABLE} upsert {date_key} -> {v}")
+    except Exception:
+        conn.rollback()
+        raise
     finally:
         conn.close()
+
+
 
 def main():
     files = find_files()
