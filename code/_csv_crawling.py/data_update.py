@@ -4,16 +4,20 @@ import os, re, glob
 import pandas as pd
 import pymysql
 from pathlib import Path
-
+import os
+from dotenv import load_dotenv
 # ===== 설정 =====
-DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
-DB_USER = os.getenv("DB_USER", "root")
-DB_PASS = os.getenv("DB_PASSWORD", "1234")
+load_dotenv()
+DB_HOST = os.getenv("DB_HOST")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+CHARSET="utf8mb4"
 DB_NAME = "1st_project"
 TABLE   = "ice_monthly"                   # 컬럼: date_key, gasoline, diesel, lpg, cng
 SHEET   = "10.연료별_등록현황"               # 시트명
 DRY_RUN = False                           # True면 DB에 안 씀(프리뷰만)
 # ==============
+
 
 BASE = Path(__file__).resolve().parent
 PATTERNS = [
@@ -87,8 +91,11 @@ def extract_values(path: str):
     }
 def upsert(date_key: int, v: dict):
     conn = pymysql.connect(
-        host=DB_HOST, user=DB_USER, password=DB_PASS,
-        database=DB_NAME, charset="utf8mb4", autocommit=False
+      host=DB_HOST,
+      user=DB_USER,
+      password=DB_PASSWORD,
+      database=DB_NAME,
+      charset=CHARSET
     )
     try:
         with conn.cursor() as cur:
