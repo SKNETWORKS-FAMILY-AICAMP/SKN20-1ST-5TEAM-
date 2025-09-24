@@ -18,9 +18,9 @@ CREATE SCHEMA IF NOT EXISTS `1st_project` DEFAULT CHARACTER SET utf8mb4 COLLATE 
 USE `1st_project` ;
 
 -- -----------------------------------------------------
--- Table `1st_project`.`dim_month`
+-- Table `1st_project`.`dim_monthly`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `1st_project`.`dim_month` (
+CREATE TABLE IF NOT EXISTS `1st_project`.`dim_monthly` (
   `date_key` INT NOT NULL,
   `year` INT NOT NULL,
   `month` INT NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `1st_project`.`eco_monthly` (
   PRIMARY KEY (`date_key`),
   CONSTRAINT `fk_eco_monthly_dim_month`
     FOREIGN KEY (`date_key`)
-    REFERENCES `1st_project`.`dim_month` (`date_key`))
+    REFERENCES `1st_project`.`dim_monthly` (`date_key`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `1st_project`.`ice_monthly` (
   PRIMARY KEY (`date_key`),
   CONSTRAINT `fk_ice_monthly_dim_month1`
     FOREIGN KEY (`date_key`)
-    REFERENCES `1st_project`.`dim_month` (`date_key`))
+    REFERENCES `1st_project`.`dim_monthly` (`date_key`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;

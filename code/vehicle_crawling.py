@@ -71,7 +71,7 @@ def run_matrix_steps(driver):
 def insert_dim_month(cur, int_date, year, month):
     # sql = "INSERT INTO dim_month VALUES (%s, %s, %s)"
     sql = """
-        INSERT INTO dim_month (date_key, year, month)
+        INSERT INTO dim_monthly (date_key, year, month)
         VALUES (%s, %s, %s)
         ON DUPLICATE KEY UPDATE
             year = VALUES(year),
