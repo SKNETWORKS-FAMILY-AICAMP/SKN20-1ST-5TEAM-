@@ -11,192 +11,197 @@ load_dotenv()
 def get_db_connection():
     try:
         connection = pymysql.connect(
-            host= os.getenv('DB_HOST'),
-            user= os.getenv('DB_USER'),
-            passwd= os.getenv('DB_PASSWORD'),
-            database= os.getenv('DB_NAME')
-            )
+            host=os.getenv('DB_HOST'),
+            user=os.getenv('DB_USER'),
+            passwd=os.getenv('DB_PASSWORD'),
+            database=os.getenv('DB_NAME')
+        )
         return connection
     except Exception as e:
         st.error(f"데이터베이스 연결 실패: {e}")
         return None
 
-# FAQ 데이터 가져오기 함수
-def get_faq_data(company=None, category=None, search_keyword=None):
+# 브랜드 자동 추출 함수
+@st.cache_data(ttl=300)  # 5분 캐시
+def get_dynamic_brands():
+    """DB에서 브랜드를 자동으로 추출"""
     connection = get_db_connection()
     if not connection:
-        return None
+        return []
     
     try:
         cursor = connection.cursor()
-        
-        # 기본 쿼리
-        query = """
-        SELECT idfaq, company, question, answer
-        FROM faq
-        WHERE 1=1
-        """
-        params = []
-        
-        # 회사 필터
-        if company and company.lower() != 'all':
-            query += " AND company = %s"
-            params.append(company.lower())
-        
-        # 카테고리 필터 (질문 내용으로 분류)
-        if category and category != 'all':
-            if category == 'bluelink':
-                query += " AND (question LIKE %s OR answer LIKE %s)"
-                params.extend(['%블루링크%', '%블루링크%'])
-            elif category == 'maintenance':
-                query += " AND (question LIKE %s OR question LIKE %s OR question LIKE %s)"
-                params.extend(['%정비%', '%에어컨%', '%리모컨%'])
-            elif category == 'model_service':
-                query += " AND (question LIKE %s OR question LIKE %s)"
-                params.extend(['%모델%', '%내비게이션%'])
-        
-        # 키워드 검색
-        if search_keyword:
-            query += " AND (question LIKE %s OR answer LIKE %s)"
-            params.extend([f'%{search_keyword}%', f'%{search_keyword}%'])
-        
-        query += " ORDER BY company, idfaq"
-        
-        cursor.execute(query, params)
+        query = "SELECT DISTINCT company FROM faq ORDER BY company"
+        cursor.execute(query)
         results = cursor.fetchall()
-        
         connection.close()
-        return results
+        
+        # 브랜드 목록 생성
+        brands = [row[0] for row in results]
+        
+        # 브랜드명 매핑 (표시용)
+        brand_display_names = []
+        for brand in brands:
+            if brand == 'hyundai':
+                brand_display_names.append('현대')
+            elif brand == 'genesis':
+                brand_display_names.append('제네시스')
+            else:
+                # 새로운 브랜드가 추가되어도 자동 처리
+                brand_display_names.append(brand.title())
+        
+        return brands, brand_display_names
         
     except Exception as e:
-        st.error(f"FAQ 데이터 조회 실패: {e}")
-        connection.close()
-        return None
+        st.error(f"브랜드 추출 실패: {e}")
+        if connection:
+            connection.close()
+        return [], []
 
-# 원본 질문에서 카테고리와 세부 정보 추출하는 함수
-def parse_question_structure(question):
-    # 예: [ 블루링크 > 가입/해지/변경 ][가입] 블루링크에 가입하려면 어떻게 해야 하나요?
-    
-    # 첫 번째 대괄호에서 주 카테고리 추출
-    main_category_match = re.search(r'^\[\s*([^>\]]+)', question)
-    main_category = main_category_match.group(1).strip() if main_category_match else '기타'
-    
-    # import streamlit as st
-import pymysql
-import os
-from dotenv import load_dotenv
-import re
-import html
-
-# 환경변수 로드
-load_dotenv()
-
-# 데이터베이스 연결 함수
-def get_db_connection():
-    try:
-        connection = pymysql.connect(
-            host= os.getenv('DB_HOST'),
-            user= os.getenv('DB_USER'),
-            passwd= os.getenv('DB_PASSWORD'),
-            database= os.getenv('DB_NAME')
-            )
-        return connection
-    except Exception as e:
-        st.error(f"데이터베이스 연결 실패: {e}")
-        return None
-
-# FAQ 데이터 가져오기 함수
-def get_faq_data(company=None, category=None, search_keyword=None):
+# 브랜드별 카테고리 자동 추출 함수
+@st.cache_data(ttl=300)  # 5분 캐시
+def get_dynamic_categories():
+    """DB에서 브랜드별 카테고리를 자동으로 추출"""
     connection = get_db_connection()
     if not connection:
-        return None
+        return {}
     
     try:
         cursor = connection.cursor()
-        
-        # 기본 쿼리
-        query = """
-        SELECT idfaq, company, question, answer
-        FROM faq
-        WHERE 1=1
-        """
-        params = []
-        
-        # 회사 필터
-        if company and company.lower() != 'all':
-            query += " AND company = %s"
-            params.append(company.lower())
-        
-        # 카테고리 필터 (질문 내용으로 분류)
-        if category and category != 'all':
-            if category == 'bluelink':
-                query += " AND (question LIKE %s OR answer LIKE %s)"
-                params.extend(['%블루링크%', '%블루링크%'])
-            elif category == 'maintenance':
-                query += " AND (question LIKE %s OR question LIKE %s OR question LIKE %s)"
-                params.extend(['%정비%', '%에어컨%', '%리모컨%'])
-            elif category == 'model_service':
-                query += " AND (question LIKE %s OR question LIKE %s)"
-                params.extend(['%모델%', '%내비게이션%'])
-        
-        # 키워드 검색
-        if search_keyword:
-            query += " AND (question LIKE %s OR answer LIKE %s)"
-            params.extend([f'%{search_keyword}%', f'%{search_keyword}%'])
-        
-        query += " ORDER BY company, idfaq"
-        
-        cursor.execute(query, params)
+        query = "SELECT company, question FROM faq"
+        cursor.execute(query)
         results = cursor.fetchall()
-        
         connection.close()
-        return results
+        
+        # 브랜드별 카테고리 추출
+        categories_by_brand = {}
+        
+        for company_name, question in results:
+            if company_name not in categories_by_brand:
+                categories_by_brand[company_name] = set()
+            
+            # 브랜드별 패턴에 따라 카테고리 추출
+            category = extract_category_from_question_text(question, company_name)
+            if category and category.strip():
+                categories_by_brand[company_name].add(category)
+        
+        # set을 sorted list로 변환
+        for brand in categories_by_brand:
+            categories_by_brand[brand] = sorted(list(categories_by_brand[brand]))
+        
+        return categories_by_brand
         
     except Exception as e:
-        st.error(f"FAQ 데이터 조회 실패: {e}")
-        connection.close()
-        return None
+        st.error(f"카테고리 추출 실패: {e}")
+        if connection:
+            connection.close()
+        return {}
 
-# 원본 질문에서 카테고리와 세부 정보 추출하는 함수
-def parse_question_structure(question):
-    # 예: [ 블루링크 > 가입/해지/변경 ][가입] 블루링크에 가입하려면 어떻게 해야 하나요?
+def extract_category_from_question_text(question, company):
+    """질문 텍스트에서 카테고리를 자동으로 추출 (완전 자동화)"""
     
-    # 첫 번째 대괄호에서 주 카테고리 추출
-    main_category_match = re.search(r'^\[\s*([^>\]]+)', question)
-    main_category = main_category_match.group(1).strip() if main_category_match else '기타'
+    if company == 'hyundai':
+        # 현대 패턴: [ 카테고리 > 세부카테고리 ] 또는 [ 카테고리 ]
+        main_category_match = re.search(r'^\[\s*([^\>\]]+)', question)
+        if main_category_match:
+            category = main_category_match.group(1).strip()
+            return category
     
-    # 두 번째 대괄호에서 세부 카테고리 추출
-    sub_category_match = re.search(r'\]\[([^\]]+)\]', question)
-    sub_category = sub_category_match.group(1).strip() if sub_category_match else ''
+    elif company == 'genesis':
+        # 제네시스 패턴: [카테고리]
+        category_match = re.search(r'^\[([^\]]+)\]', question)
+        if category_match:
+            category = category_match.group(1).strip()
+            return category
     
-    # 실제 질문 내용 (대괄호 제거)
-    clean_question = re.sub(r'\[.*?\]', '', question).strip()
-    
-    return {
-        'main_category': main_category,
-        'sub_category': sub_category,
-        'clean_question': clean_question
-    }
-
-# FAQ 질문 제목 정리 함수
-def clean_question_title(question):
-    parsed = parse_question_structure(question)
-    return parsed['clean_question']
-
-# 카테고리 추출 함수 (원본 구조 활용)
-def extract_category_from_question(question):
-    parsed = parse_question_structure(question)
-    main_cat = parsed['main_category'].lower()
-    
-    if '블루링크' in main_cat:
-        return '블루링크'
-    elif any(keyword in main_cat for keyword in ['차량', '정비', '모델']):
-        if '정비' in main_cat:
-            return '차량정비' 
-        else:
-            return '모델서비스'
     else:
-        return '기타'
+        # 새로운 브랜드에 대한 일반적인 패턴 (대괄호 감지)
+        category_match = re.search(r'^\[([^\]]+)\]', question)
+        if category_match:
+            category = category_match.group(1).strip()
+            return category
+    
+    return None
+
+# 브랜드별 질문 정리 함수
+def clean_question_title(question, company):
+    """브랜드별 질문에서 카테고리 부분 제거하고 깨끗한 질문만 추출"""
+    
+    if company == 'hyundai':
+        # 현대: 모든 대괄호 제거
+        clean_question = re.sub(r'\[.*?\]', '', question).strip()
+        return clean_question
+    
+    elif company == 'genesis':
+        # 제네시스: 첫 번째 대괄호만 제거
+        clean_question = re.sub(r'^\[.*?\]\s*', '', question).strip()
+        return clean_question
+    
+    else:
+        # 새로운 브랜드에 대한 일반적인 처리
+        clean_question = re.sub(r'^\[.*?\]\s*', '', question).strip()
+        return clean_question
+    
+    return question
+
+# FAQ 데이터 가져오기 함수 (완전 자동화)
+def get_faq_data(company=None, category=None, search_keyword=None):
+    connection = get_db_connection()
+    if not connection:
+        return None
+    
+    try:
+        cursor = connection.cursor()
+        
+        # 기본 쿼리
+        query = """
+        SELECT idfaq, company, question, answer
+        FROM faq
+        WHERE 1=1
+        """
+        params = []
+        
+        # 회사 필터
+        if company and company.lower() != 'all':
+            query += " AND company = %s"
+            params.append(company.lower())
+        
+        # 카테고리 필터 (완전 자동화 - 하드코딩 없음)
+        if category and category != 'all':
+            # 대괄호 안에 해당 카테고리가 포함된 질문 검색
+            query += " AND question REGEXP %s"
+            # 정규식으로 [카테고리] 또는 [카테고리 > ...] 패턴 매칭
+            params.append(f'^\\[.*{re.escape(category)}.*\\]')
+        
+        # 키워드 검색
+        if search_keyword:
+            query += " AND (question LIKE %s OR answer LIKE %s)"
+            params.extend([f'%{search_keyword}%', f'%{search_keyword}%'])
+        
+        query += " ORDER BY company, idfaq"
+        
+        cursor.execute(query, params)
+        results = cursor.fetchall()
+        
+        connection.close()
+        return results
+        
+    except Exception as e:
+        st.error(f"FAQ 데이터 조회 실패: {e}")
+        connection.close()
+        return None
+
+# 브랜드 표시명을 실제 DB값으로 변환
+def get_brand_db_value(display_name, brands, brand_display_names):
+    """표시명을 DB의 실제 브랜드명으로 변환"""
+    if display_name == '전체':
+        return 'all'
+    
+    try:
+        index = brand_display_names.index(display_name)
+        return brands[index]
+    except (ValueError, IndexError):
+        return display_name.lower()
 
 def show_faq():
     """FAQ 페이지를 표시하는 메인 함수"""
@@ -204,25 +209,47 @@ def show_faq():
     st.markdown("""
     <div class="hero-section">
         <h1 class="hero-title">❓ 자주 묻는 질문</h1>
-        <p class="hero-subtitle">현대·기아 차량 관련 궁금한 점들을 확인해보세요</p>
+        <p class="hero-subtitle">자동 감지된 브랜드의 차량 관련 궁금한 점들을 확인해보세요</p>
     </div>
     """, unsafe_allow_html=True)
+    
+    # 동적 브랜드 및 카테고리 로딩
+    with st.spinner("브랜드와 카테고리를 자동으로 감지하는 중..."):
+        brands, brand_display_names = get_dynamic_brands()
+        all_categories = get_dynamic_categories()
     
     # 검색 및 필터 섹션
     col1, col2, col3 = st.columns([2, 2, 3])
     
     with col1:
-        selected_brand = st.selectbox(
+        # 동적 브랜드 선택 (완전 자동화)
+        brand_options = ["전체"] + brand_display_names
+        selected_brand_display = st.selectbox(
             "🏢 브랜드", 
-            ["전체", "현대", "기아"],
-            help="브랜드를 선택하세요"
+            brand_options,
+            help="DB에서 자동 감지된 브랜드를 선택하세요"
         )
     
     with col2:
+        # 선택된 브랜드의 실제 DB값 가져오기
+        selected_brand_db = get_brand_db_value(selected_brand_display, brands, brand_display_names)
+        
+        # 브랜드별 동적 카테고리 옵션 (완전 자동화)
+        if selected_brand_display != "전체" and selected_brand_db in all_categories:
+            category_options = ["전체"] + all_categories[selected_brand_db]
+        elif selected_brand_display == "전체":
+            # 모든 브랜드의 카테고리 합치기
+            all_cats = set()
+            for brand_cats in all_categories.values():
+                all_cats.update(brand_cats)
+            category_options = ["전체"] + sorted(list(all_cats))
+        else:
+            category_options = ["전체"]
+        
         selected_category = st.selectbox(
             "📂 카테고리", 
-            ["전체", "블루링크", "차량정비", "모델서비스"],
-            help="FAQ 카테고리를 선택하세요"
+            category_options,
+            help="자동 감지된 카테고리를 선택하세요"
         )
     
     with col3:
@@ -236,22 +263,23 @@ def show_faq():
     with st.expander("📖 FAQ 사용 안내", expanded=False):
         st.markdown("""
         <div style="padding: 0.5rem;">
-            <p><strong>💡 브랜드 선택:</strong> 현대 또는 기아 브랜드를 선택하여 해당 브랜드의 FAQ를 확인하세요.</p>
-            <p><strong>📂 카테고리 필터:</strong> 블루링크, 차량정비, 모델서비스 등 원하는 카테고리로 필터링하세요.</p>
+            <p><strong>🤖 완전 자동화:</strong> 브랜드와 카테고리 모두 데이터베이스에서 자동으로 감지됩니다.</p>
+            <p><strong>🏢 동적 브랜드:</strong> 새로운 브랜드가 DB에 추가되면 자동으로 선택 옵션에 나타납니다.</p>
+            <p><strong>📂 동적 카테고리:</strong> 브랜드별로 실시간 감지된 카테고리가 표시됩니다.</p>
             <p><strong>🔍 키워드 검색:</strong> 궁금한 내용의 키워드를 입력하여 관련 FAQ를 빠르게 찾으세요.</p>
             <p><strong>💬 FAQ 확장:</strong> 질문을 클릭하면 상세한 답변을 확인할 수 있습니다.</p>
+            <p><strong>🔄 무한 확장:</strong> 크롤링으로 새 데이터 추가 시 모든 것이 자동 갱신됩니다.</p>
         </div>
         """, unsafe_allow_html=True)
     
-    # 필터 매핑
-    brand_map = {"전체": "all", "현대": "hyundai", "기아": "kia"}
-    category_map = {"전체": "all", "블루링크": "bluelink", "차량정비": "maintenance", "모델서비스": "model_service"}
+    # 카테고리도 완전 자동화 (하드코딩 제거)
+    category_filter = selected_category if selected_category != "전체" else "all"
     
     # FAQ 데이터 로딩
     with st.spinner("FAQ 데이터를 불러오는 중..."):
         faq_data = get_faq_data(
-            company=brand_map[selected_brand],
-            category=category_map[selected_category],
+            company=selected_brand_db,
+            category=category_filter,
             search_keyword=search_keyword.strip() if search_keyword.strip() else None
         )
     
@@ -269,15 +297,25 @@ def show_faq():
         for faq in faq_data:
             idfaq, company, question, answer = faq
             
-            # 카테고리 추출
-            category_badge = extract_category_from_question(question)
+            # 자동 카테고리 추출 (표시용)
+            category_badge = extract_category_from_question_text(question, company)
+            if not category_badge:
+                category_badge = "기타"
             
-            # 질문 제목 정리
-            clean_question = clean_question_title(question)
+            # 브랜드별 질문 제목 정리
+            clean_question = clean_question_title(question, company)
             
-            # 브랜드 배지 색상
-            brand_color = "#00AAD2" if company == "hyundai" else "#05141F"
-            brand_name = "현대" if company == "hyundai" else "기아"
+            # 브랜드 배지 색상 (동적 처리)
+            if company == "hyundai":
+                brand_color = "#00AAD2"
+                brand_name = "현대"
+            elif company == "genesis":
+                brand_color = "#2F1B14"
+                brand_name = "제네시스"
+            else:
+                # 새로운 브랜드에 대한 기본 색상
+                brand_color = "#6c757d"
+                brand_name = company.title()
             
             # FAQ 카드
             with st.expander(f"💬 {clean_question}", expanded=False):
@@ -312,20 +350,6 @@ def show_faq():
                                font-size: inherit;">{answer.strip()}</pre>
                 </div>
                 """, unsafe_allow_html=True)
-        
-        # 현재 기아 FAQ가 없다는 안내
-        if selected_brand == "기아":
-            st.markdown("""
-            <div style="background: #fff3cd; border: 1px solid #ffeaa7; 
-                       padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-                <h4 style="color: #856404; margin: 0 0 0.5rem 0;">
-                    🚧 기아 FAQ 준비 중
-                </h4>
-                <p style="color: #856404; margin: 0;">
-                    기아 브랜드의 FAQ는 현재 준비 중입니다. 빠른 시일 내에 업데이트될 예정입니다.
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
     
     elif faq_data is not None:
         # 검색 결과가 없는 경우
