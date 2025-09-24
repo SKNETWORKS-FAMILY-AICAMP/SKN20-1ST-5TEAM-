@@ -37,24 +37,15 @@ MySQL DB 설계 및 데이터 저장
 - 일정 및 역할 분담
 - 데이터 수집 (크롤링)
 - 데이터베이스 설계 및 구축
-- UI/UX 구현
 - 문서화 및 발표 준비
 
-### 📄 요구사항 명세서
-### 🌀 사용자 요구사항
-- 기능적 요구사항
-
-### 🖥 시스템 요구사항  
-- 비기능적 요구사항
-
 ## 📊 ERD 구조
-- 데이터베이스 구조도
-- 테이블 간 관계 정의
+<img width="1297" height="816" alt="erd1" src="https://github.com/user-attachments/assets/faf049eb-9d2b-4fb0-a96d-c90095f204a4" />
 
 ## 📋 테이블 명세서
-- 각 테이블별 컬럼 정의
-- 데이터 타입 및 제약조건
-- 기본키/외래키 관계
+<img width="862" height="331" alt="테이블11" src="https://github.com/user-attachments/assets/d45bd62f-7a1f-4ad8-972c-dcff1ffc4824" />
+<img width="882" height="310" alt="테이블12" src="https://github.com/user-attachments/assets/fc985cbe-a498-46d6-9d78-0ca87f2ef59a" />
+<img width="885" height="318" alt="테이블13" src="https://github.com/user-attachments/assets/c935e96c-8e54-4271-acd6-040fbd4e4624" />
 
 ## 📚 데이터 소개
 ### 🚗 수집 데이터 출처
