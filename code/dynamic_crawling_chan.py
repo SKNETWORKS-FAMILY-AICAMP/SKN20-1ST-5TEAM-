@@ -53,7 +53,6 @@ def start_dynamic_option_setting():
     driver.switch_to.default_content()
     time.sleep(3)
 
-<<<<<<< HEAD
 def insert_dim_month(cur, int_date, year, month):
     # sql = "INSERT INTO dim_month VALUES (%s, %s, %s)"
     sql = """
@@ -72,25 +71,6 @@ def insert_eco_monthly(cur, int_date, electric, hybrid, hydrogen, etc, cng):
 def insert_ice_monthly(cur, int_date, gasoline, diesel, lpg):
     sql = "INSERT INTO ice_monthly (date_key, gasoline, diesel, lpg) VALUES (%s, %s, %s, %s)"
     cur.execute(sql, (int_date, gasoline, diesel, lpg))
-=======
-import time
-from selenium.webdriver.common.by import By
-
-def run_matrix_steps(driver):
-    """매트릭스 전환 과정을 순서대로 실행하는 단일 함수"""
-    steps = [
-        ('//*[@id="ico_swap"]/a', 5),  # 매트릭스 버튼
-        ('//*[@id="Ri0"]', 1),  # 시점 선택
-        ('//*[@id="pop_pivotfunc2"]/div[2]/div[1]/div[2]/p/a[2]/img', 1),  # 시점 추가
-        ('//*[@id="Le0"]', 1),  # 차종 선택
-        ('//*[@id="pop_pivotfunc2"]/div[2]/div[1]/div[1]/div/span/a[2]/img', 1),  # 차종 이동
-        ('//*[@id="pop_pivotfunc2"]/div[2]/div[2]/span/a', 1)  # 적용 버튼
-    ]
-    for xpath, wait_time in steps:
-        element = driver.find_element(By.XPATH, xpath)
-        element.click()
-        time.sleep(wait_time)
->>>>>>> 3725ec3 (feat: 행렬전환 함수 수정)
 
 
 def crawl_data():
