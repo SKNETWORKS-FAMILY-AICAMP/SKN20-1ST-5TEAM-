@@ -10,10 +10,11 @@ import time
 
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service)
-URL = 'https://www.hyundai.com/kr/ko/faq.html'
+HYUNDAI_URL = 'https://www.hyundai.com/kr/ko/faq.html'
+GENESIS_URL = 'https://www.genesis.com/content/genesis-p2/kr/ko/support/faq.html?kw='
 
-def set_dynamic_crawling_option():
-    driver.get(URL)
+def set_hyundai_dynamic_crawling_option():
+    driver.get(HYUNDAI_URL)
     driver.maximize_window() 
     time.sleep(2)   
     dl_elements = driver.find_elements(By.CSS_SELECTOR, "#contents > div.faq > div > div.section_white > div > div.result_area > div.ui_accordion.acc_01 > dl")
@@ -27,7 +28,6 @@ def set_dynamic_crawling_option():
         except Exception as e:
             print(f"클릭 실패: {e}")
     time.sleep(2)
-    
 
 def crawl_hyundai_faq():
     soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -50,5 +50,36 @@ def crawl_hyundai_faq():
                     print(f'e: {e}')
                 conn.commit()
 
-set_dynamic_crawling_option()
+def crawl_genesis_faq():
+    driver.get(GENESIS_URL)
+    driver.maximize_window() 
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    selected_div_list = soup.select('#faq_tab > div > div.cp-faq__content > div.cp-faq__panel > div.cp-faq__panel-list > div > div > div > .cp-faq__accordion-item')
+    COMPANY = 'genesis'
+
+    for div in selected_div_list:
+        # print(div)
+        category = div.select_one('div > a > strong').text
+        title = div.select_one('div > a').get('title')
+        question = f"{category} {title}"
+        answer = div.select_one('div > .accordion-panel').text
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                try:
+                    sql = '''
+                        INSERT INTO faq (idfaq, company, question, answer)
+                        VALUES (%s, %s, %s, %s)
+                    '''
+                    cur.execute(sql, (None, COMPANY, question, answer))
+                except Exception as e:
+                    print(f'e: {e}')
+                conn.commit()
+        # print(category, question)
+        # print(answer)
+        # answer = dl.select_one('dd > .exp').text
+        
+    time.sleep(10)
+
+set_hyundai_dynamic_crawling_option()
 crawl_hyundai_faq()
+crawl_genesis_faq()
