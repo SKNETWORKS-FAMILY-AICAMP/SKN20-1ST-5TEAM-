@@ -3,10 +3,9 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys # enter키 등을 입력하기 위해서
+from selenium.webdriver.common.keys import Keys 
 from bs4 import BeautifulSoup
-from db_chan import get_connection
-import pymysql
+from db_connect import get_connection
 import time
 
 service = Service(ChromeDriverManager().install())
