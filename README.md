@@ -6,7 +6,6 @@
 ## 🖥️ 프로젝트
 친환경차량과 비친환경 차량의
 10년간 변화추이신규 등록 추이
-<img width="934" height="283" alt="image" src="https://github.com/user-attachments/assets/27332d34-af08-474c-8258-a21c6df0e476" />
 
 ### 📅 개발 기간
 - **2025.09.24 ~ 2025.09.25 (총 2일)**
