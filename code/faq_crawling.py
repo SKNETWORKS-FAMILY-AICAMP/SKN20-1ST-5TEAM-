@@ -80,6 +80,6 @@ def crawl_genesis_faq():
         
     time.sleep(10)
 
-# set_hyundai_dynamic_crawling_option()
-# crawl_hyundai_faq()
+set_hyundai_dynamic_crawling_option()
+crawl_hyundai_faq()
 crawl_genesis_faq()
