@@ -4,5 +4,7 @@
 # 파이썬
 .venv
 *.__pycache__
-code/__pycache__/
+code/db/__pycache__/
+code/faq/__pycache__/
+code/vehicle/__pycache__/
 streamlit/__pycache__/
