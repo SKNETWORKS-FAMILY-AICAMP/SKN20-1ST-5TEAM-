@@ -60,11 +60,22 @@ st.sidebar.markdown("""
 """, unsafe_allow_html=True)
 
 # 페이지 선택
-page = st.sidebar.selectbox(
-    "페이지 선택",
-    ["🏠 메인페이지", "📊 그래프 분석", "❓ FAQ"],
-    index=0
-)
+if "page" not in st.session_state:
+    st.session_state.page = "🏠 메인페이지"
+
+# 버튼 메뉴
+if st.sidebar.button("🏠 메인페이지"):
+    st.session_state.page = "🏠 메인페이지"
+
+if st.sidebar.button("📊 그래프 분석"):
+    st.session_state.page = "📊 그래프 분석"
+
+if st.sidebar.button("❓ FAQ"):
+    st.session_state.page = "❓ FAQ"
+    
+# 기존 코드와 동일하게 page 변수 사용
+page = st.session_state.page
+
 
 # === 메인페이지 ===
 if page == "🏠 메인페이지":
@@ -134,6 +145,6 @@ st.markdown("---")
 st.markdown("""
 <div style="margin-top: 3rem; padding: 2rem; text-align: center; color: white; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 12px;">
     <h4 style="color: white; margin-bottom: 1rem;">🚗 자동차 데이터 분석 프로젝트</h4>
-    <p style="margin: 0;">© 2024 | Made with ❤️ using Python & Streamlit</p>
+    <p style="margin: 0;">© 2025.9.25. | Made with 5팀 </p>
 </div>
 """, unsafe_allow_html=True)
