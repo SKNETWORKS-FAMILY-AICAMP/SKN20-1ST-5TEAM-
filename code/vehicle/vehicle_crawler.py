@@ -44,7 +44,7 @@ class VehicleCrawler:
             ('//*[@id="pop_pivotfunc2"]/div[2]/div[1]/div[2]/p/a[2]/img', 1),
             ('//*[@id="Le0"]', 1),
             ('//*[@id="pop_pivotfunc2"]/div[2]/div[1]/div[1]/div/span/a[2]/img', 1),
-            ('//*[@id="pop_pivotfunc2"]/div[2]/div[2]/span/a', 3)
+            ('//*[@id="pop_pivotfunc2"]/div[2]/div[2]/span/a', 10)
         ]
         for xpath, wait_time in steps:
             driver.find_element(By.XPATH, xpath).click()

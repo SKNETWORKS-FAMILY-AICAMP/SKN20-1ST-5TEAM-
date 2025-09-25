@@ -2,8 +2,8 @@ import sys
 import os 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))) 
 
-from vehicle_crawler import VehicleCrawler
-from vehicle_repository import VehicleRepository
+from .vehicle_crawler import VehicleCrawler
+from .vehicle_repository import VehicleRepository
 
 def main():
     crawler = VehicleCrawler()
