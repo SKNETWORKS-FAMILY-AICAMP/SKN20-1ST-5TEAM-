@@ -93,8 +93,8 @@ def show_graph_analysis():
      
     st.markdown("""  
     <div class="hero-section">  
-        <h1 class="hero-title">📊 고급 그래프 분석 (Plotly + Pandas)</h1>  
-        <p class="hero-subtitle">Plotly, Pandas, Numpy를 활용한 인터랙티브 데이터 시각화</p>  
+        <h1 class="hero-title">📊 서울시 신규 차량 등록 현황 분석</h1>  
+        <p class="hero-subtitle">2015~2024년 서울시 친환경차와 내연기관차의 등록 추세와 비율 변화를 시각화하여 분석한 결과</p>  
     </div>  
     """, unsafe_allow_html=True)  
      
@@ -612,10 +612,10 @@ def show_graph_analysis():
         <div class="feature-card">  
             <h3 style="color: #2a5298;">📌 주요 분석 시사점</h3>  
             <ul>  
-                <li><strong>지속적 성장세:</strong> 지난 10년간 친환경차 등록은 연평균 약 18% 증가하며 뚜렷한 확대 추세를 보임</li>  
-                <li><strong>기술 주도권:</strong> 전기차가 친환경차 전체의 약 55%를 차지하며 시장 성장을 주도</li>  
-                <li><strong>정책 효과:</strong> 2020년 이후 그린뉴딜 및 보조금 정책으로 성장 속도가 가속화됨</li>  
-                <li><strong>향후 전망:</strong> 현재 추세 지속 시 2030년에는 전체 등록 차량의 약 80%가 친환경차일 것으로 예측됨</li>  
+               <li><strong>빠른 성장세:</strong> 지난 10년간 친환경차 등록은 연평균 약 24.7% 증가하며 뚜렷한 확대 추세를 보임</li>  
+                <li><strong>기술 분포:</strong> 전기차는 전체 친환경차의 약 17.5%를 차지하여, 아직 하이브리드·수소차가 큰 비중을 담당</li>  
+                <li><strong>정책 효과:</strong> 2020년 이후 정부 보조금과 친환경 정책 강화로 성장 속도가 가속화됨</li>  
+                <li><strong>향후 전망:</strong> 현 추세가 지속된다면 친환경차 비중은 더욱 빠르게 확대될 것으로 예상됨</li>   
             </ul>  
         </div>  
         """, unsafe_allow_html=True)  

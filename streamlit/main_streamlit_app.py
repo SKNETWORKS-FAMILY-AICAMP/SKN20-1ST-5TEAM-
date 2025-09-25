@@ -54,8 +54,7 @@ st.markdown("""
 # 사이드바
 st.sidebar.markdown("""
 <div style="text-align: center; padding: 1rem; color: white; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 10px; margin-bottom: 2rem;">
-    <h2 style="color: white; margin: 0;">🚗 프로젝트</h2>
-    <p style="color: rgba(255,255,255,0.8); margin: 0.5rem 0 0 0;">자동차 데이터 분석</p>
+    <h2 style="color: white; margin: 0;">🚗 친환경차량 동향</h2>
 </div>
 """, unsafe_allow_html=True)
 
@@ -67,8 +66,8 @@ if "page" not in st.session_state:
 if st.sidebar.button("🏠 메인페이지"):
     st.session_state.page = "🏠 메인페이지"
 
-if st.sidebar.button("📊 그래프 분석"):
-    st.session_state.page = "📊 그래프 분석"
+if st.sidebar.button("📊 차량 등록 분석"):
+    st.session_state.page = "📊 차량 등록 분석"
 
 if st.sidebar.button("❓ FAQ"):
     st.session_state.page = "❓ FAQ"
@@ -81,8 +80,8 @@ page = st.session_state.page
 if page == "🏠 메인페이지":
     st.markdown("""
     <div class="hero-section">
-        <h1 class="hero-title">🚗 자동차 데이터 분석 프로젝트</h1>
-        <p class="hero-subtitle">서울시 신규등록차량 데이터를 통한 친환경차량 동향 분석</p>
+        <h1 class="hero-title">🚗 서울시 신규등록차량 데이터를 통한 
+                <br>친환경차량 동향 분석</h1>
     </div>
     """, unsafe_allow_html=True)
     
@@ -108,7 +107,7 @@ if page == "🏠 메인페이지":
     with col3:
         st.markdown("""
         <div class="feature-card">
-            <h3 style="color: #2a5298;">🎯 인사이트 도출</h3>
+            <h3 style="color: #2a5298;">🎯 시사점</h3>
             <p>데이터 기반의 분석을 통해 자동차 시장의 변화와 정책적 시사점을 도출하고 제시합니다.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -133,7 +132,7 @@ if page == "🏠 메인페이지":
     """, unsafe_allow_html=True)
 
 # === 그래프 분석 페이지 ===
-elif page == "📊 그래프 분석":
+elif page == "📊 차량 등록 분석":
     show_graph_analysis()
 
 # === FAQ 페이지 ===
