@@ -275,6 +275,15 @@ def show_faq():
     # 카테고리도 완전 자동화 (하드코딩 제거)
     category_filter = selected_category if selected_category != "전체" else "all"
     
+    # 필터 변경 감지 및 페이지 리셋
+    current_filters = f"{selected_brand_db}_{category_filter}_{search_keyword.strip()}"
+    if 'prev_filters' not in st.session_state:
+        st.session_state.prev_filters = current_filters
+    
+    if st.session_state.prev_filters != current_filters:
+        st.session_state.current_page = 1  # 페이지 리셋
+        st.session_state.prev_filters = current_filters
+    
     # FAQ 데이터 로딩
     with st.spinner("FAQ 데이터를 불러오는 중..."):
         faq_data = get_faq_data(
@@ -293,8 +302,27 @@ def show_faq():
         </div>
         """, unsafe_allow_html=True)
         
-        # FAQ 목록을 카드 형태로 표시
-        for faq in faq_data:
+        # 페이지네이션 구현 (10개 고정)
+        items_per_page = 10
+        total_pages = (len(faq_data) + items_per_page - 1) // items_per_page
+        
+        # 현재 페이지 상태 초기화
+        if 'current_page' not in st.session_state:
+            st.session_state.current_page = 1
+            
+        # 페이지 범위 벗어남 방지
+        if st.session_state.current_page > total_pages:
+            st.session_state.current_page = total_pages
+        
+        current_page = st.session_state.current_page
+        
+        # 현재 페이지에 해당하는 데이터만 추출
+        start_idx = (current_page - 1) * items_per_page
+        end_idx = start_idx + items_per_page
+        page_faq_data = faq_data[start_idx:end_idx]
+        
+        # FAQ 목록을 카드 형태로 표시 (페이지별)
+        for faq in page_faq_data:
             idfaq, company, question, answer = faq
             
             # 자동 카테고리 추출 (표시용)
@@ -350,6 +378,40 @@ def show_faq():
                                font-size: inherit;">{answer.strip()}</pre>
                 </div>
                 """, unsafe_allow_html=True)
+        
+        # 페이지네이션 (FAQ 카드들 아래쪽에 배치)
+        if total_pages > 1:
+            st.markdown("---")  # 구분선
+            
+            # 페이지 범위 계산 (현재 페이지 ±2, 총 5개)
+            start_page = max(1, current_page - 2)
+            end_page = min(total_pages, current_page + 2)
+            
+            # 5개 미만이면 범위 조정
+            if end_page - start_page < 4:
+                if start_page == 1:
+                    end_page = min(total_pages, start_page + 4)
+                else:
+                    start_page = max(1, end_page - 4)
+            
+            # 중앙 정렬을 위한 컨테이너
+            col_left, col_center, col_right = st.columns([1, 2, 1])
+            
+            with col_center:
+                # 페이지 버튼 생성 (간단한 스타일)
+                page_range = list(range(start_page, end_page + 1))
+                cols = st.columns(len(page_range))
+                
+                for i, page_num in enumerate(page_range):
+                    with cols[i]:
+                        if page_num == current_page:
+                            # 현재 페이지 (간단한 강조)
+                            st.markdown(f"**[{page_num}]**")
+                        else:
+                            # 다른 페이지 (클릭 가능한 버튼)
+                            if st.button(f"{page_num}", key=f"page_btn_{page_num}"):
+                                st.session_state.current_page = page_num
+                                st.rerun()
     
     elif faq_data is not None:
         # 검색 결과가 없는 경우
