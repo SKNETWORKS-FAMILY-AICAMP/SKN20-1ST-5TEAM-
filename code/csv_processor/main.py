@@ -1,6 +1,10 @@
+import sys 
+import os 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))) 
+
 from pathlib import Path
-from csv_processor import CsvProcessor
-from csv_repository import CsvRepository
+from .csv_processor import CsvProcessor
+from .csv_repository import CsvRepository
 
 SHEET = "10.연료별_등록현황"
 DRY_RUN = False
