@@ -12,11 +12,27 @@ class VehicleRepository:
         cur.execute(sql, (int_date, year, month))
 
     def insert_eco_monthly(self, cur, int_date, electric, hybrid, hydrogen, etc, cng):
-        sql = "INSERT INTO eco_monthly (date_key, ev, hev, fcev, etc, cng) VALUES (%s, %s, %s, %s, %s, %s)"
+        sql = """
+            INSERT INTO eco_monthly (date_key, ev, hev, fcev, etc, cng)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE
+                ev = VALUES(ev),
+                hev = VALUES(hev),
+                fcev = VALUES(fcev),
+                etc = VALUES(etc),
+                cng = VALUES(cng)
+        """
         cur.execute(sql, (int_date, electric, hybrid, hydrogen, etc, cng))
 
     def insert_ice_monthly(self, cur, int_date, gasoline, diesel, lpg):
-        sql = "INSERT INTO ice_monthly (date_key, gasoline, diesel, lpg) VALUES (%s, %s, %s, %s)"
+        sql = """
+            INSERT INTO ice_monthly (date_key, gasoline, diesel, lpg) 
+            VALUES (%s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE
+                gasoline = VALUES(gasoline),
+                diesel = VALUES(diesel),
+                lpg = VALUES(lpg)
+        """
         cur.execute(sql, (int_date, gasoline, diesel, lpg))
 
     def save(self, data_list):
