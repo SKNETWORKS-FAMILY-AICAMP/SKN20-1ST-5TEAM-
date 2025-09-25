@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
-from db_connect import get_connection
+from code.db.db_connect import get_connection
 import time
 
 service = Service(ChromeDriverManager().install())
@@ -58,7 +58,6 @@ def crawl_genesis_faq():
     COMPANY = 'genesis'
 
     for div in selected_div_list:
-        # print(div)
         category = div.select_one('div > a > strong').text
         title = div.select_one('div > a').get('title')
         question = f"{category} {title}"
@@ -74,9 +73,6 @@ def crawl_genesis_faq():
                 except Exception as e:
                     print(f'e: {e}')
                 conn.commit()
-        # print(category, question)
-        # print(answer)
-        # answer = dl.select_one('dd > .exp').text
         
     time.sleep(10)
 

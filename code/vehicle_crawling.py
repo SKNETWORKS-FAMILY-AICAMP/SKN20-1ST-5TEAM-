@@ -3,9 +3,8 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys 
 from bs4 import BeautifulSoup
-from db_connect import get_connection
+from code.db.db_connect import get_connection
 import time
 
 service = Service(ChromeDriverManager().install())
@@ -91,8 +90,6 @@ def insert_ice_monthly(cur, int_date, gasoline, diesel, lpg):
 def crawl_data():
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     selected_tr = soup.select('#mainTable > tbody > tr')
-    # td_span = soup.select('#mainTable > tbody > tr > td > span.val')
-    # len_selected_tr = len(selected_tr)
 
     for tr in selected_tr:
         tds = tr.select('td')
