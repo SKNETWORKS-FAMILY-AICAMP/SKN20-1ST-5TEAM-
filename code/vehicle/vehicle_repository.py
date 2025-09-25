@@ -1,4 +1,4 @@
-from code.db.db_connect import get_connection
+from db.db_connect import get_connection
 
 class VehicleRepository:
     def insert_dim_month(self, cur, int_date, year, month):
