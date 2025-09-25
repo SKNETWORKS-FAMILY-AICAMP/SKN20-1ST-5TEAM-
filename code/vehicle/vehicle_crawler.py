@@ -54,19 +54,28 @@ class VehicleCrawler:
         soup = BeautifulSoup(self.driver.page_source, 'html.parser')
         selected_tr = soup.select('#mainTable > tbody > tr')
         result = []
+
+        def parse_int(value):
+            if value is None or value.strip() == "" or value.strip() == "-":
+                return 0
+            try:
+                return int(value.replace(",", ""))
+            except (ValueError, AttributeError):
+                return 0
+
         for tr in selected_tr:
             tds = tr.select('td')
             date = tds[0].get('title').strip()
             year, month = [x.strip() for x in date.split('.')]
             int_date = int(year) * 100 + int(month)
-            gasoline = int(tds[3].get('title').replace(",", ""))
-            diesel = int(tds[4].get('title').replace(",", ""))
-            lpg = int(tds[5].get('title').replace(",", ""))
-            electric = int(tds[6].get('title').replace(",", ""))
-            cng = int(tds[7].get('title').replace(",", ""))
-            hybrid = int(tds[8].get('title').replace(",", ""))
-            hydrogen = 0 if tds[9].get('title') == "-" else int(tds[9].get('title').replace(",", ""))
-            etc = int(tds[10].get('title').replace(",", ""))
+            gasoline = parse_int(tds[3].get('title'))
+            diesel = parse_int(tds[4].get('title'))
+            lpg = parse_int(tds[5].get('title'))
+            electric = parse_int(tds[6].get('title'))
+            cng = parse_int(tds[7].get('title'))
+            hybrid = parse_int(tds[8].get('title'))
+            hydrogen = parse_int(tds[9].get('title'))
+            etc = parse_int(tds[10].get('title'))
             result.append({
                 "int_date": int_date,
                 "year": year,
